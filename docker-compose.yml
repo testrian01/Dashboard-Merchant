@@ -1,0 +1,35 @@
+version: '3.3'
+services:
+  apache-merchant:
+    container_name: apache_merchant
+    build:
+      context: ./apache_merchant
+      dockerfile: Dockerfile
+    image: php:7.4-apache
+    volumes:
+      - ./public_html/config_db/:/var/www/config_db
+      - ./apache_merchant/apache_conf/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./public_html/html/:/var/www/html
+      - ./public_html/download_report/:/var/www/download_report
+    ports:
+      - 8082:80
+    restart: on-failure
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+        env: "os" 
+    networks:
+      static_network_container:
+        ipv4_address: 192.168.200.2
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"  # Adjust as needed
+          memory: "500M"  # Adjust as needed
+
+networks:
+  static_network_container:
+    external: true
